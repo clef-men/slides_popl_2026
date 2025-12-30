@@ -1,0 +1,160 @@
+\section{Physical equality}
+
+\begin{frame}{Classification of \Zoo values}
+\LARGE
+\begin{itemize}
+  \item boolean
+  \item integer
+  \item mutable block (pointer)
+  \item immutable block (tag and fields)
+  \item function
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Non-deterministic semantics}
+\Large
+\begin{minted}{ocaml}
+let x1 = Some ()
+let x2 = Some ()
+let test1 = x1 == x1 (* maybe true *)
+let test2 = x1 == x2 (* maybe false *)
+\end{minted}
+\vfill
+\begin{tabular}{ll}
+    What \emph{guarantees} when physical equality
+    &
+    (1) returns \mintinline{ocaml}{true},
+  \\
+    &
+    (2) returns \mintinline{ocaml}{false}?
+\end{tabular}
+\end{frame}
+
+\begin{frame}[fragile]{Sharing}
+\Large
+\begin{minted}{ocaml}
+let test1 = Some 0 == Some 0 (* maybe true *)
+let test2 = [0;1]  == [0;1]  (* maybe true *)
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Value representation conflicts}
+\Large
+\begin{minted}{ocaml}
+let test1 = Obj.repr false == Obj.repr 0 (* true *)
+let test2 = Obj.repr None  == Obj.repr 0 (* true *)
+let test3 = Obj.repr []    == Obj.repr 0 (* true *)
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Sharing + conflicts}
+\Large
+\begin{minted}{ocaml}
+type any =
+  Any : 'a -> any
+
+let test1 = Any false == Any 0 (* maybe true *)
+let test2 = Any None  == Any 0 (* maybe true *)
+let test3 = Any []    == Any 0 (* maybe true *)
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Treiber stack}
+\large
+\begin{minted}{ocaml}
+type 'a t =
+  'a list Atomic.t
+
+let create () =
+  Atomic.make []
+
+let rec push t v =
+  let old = Atomic.get t in
+  let new_ = v :: old in
+  if not @@ Atomic.compare_and_set t old new_ then (
+    Domain.cpu_relax () ;
+    push t v
+  )
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Treiber stack specification}
+\large
+\begin{minted}{coq}
+Lemma stack_push_spec t ι v :
+  <<< 
+    stack_inv t ι
+  | ∀∀ vs,
+    stack_model t vs 
+  >>>
+    stack_push t v @ ↑ι
+  <<<
+    stack_model t (v :: vs)
+  | RET (); True
+  >>>.
+Proof.
+  ...
+Qed.
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Unsharing}
+\Large
+\begin{minted}{ocaml}
+let x = Some 0
+let test = x == x (* maybe false *)
+\end{minted}
+\vfill
+\begin{figure}
+  \captionsetup{justification=centering}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[height=3cm]{images/clement_allain.jpg}
+    \caption*{\footnotesize \textbf{Clément Allain} \\ Impossible! Unique identity.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[height=3cm]{images/armael_gueneau.jpg}
+    \caption*{\footnotesize \textbf{Armaël Guéneau} \\ This would be \emph{unsharing}.}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \includegraphics[height=3cm]{images/vincent_laviron.jpg}
+    \caption*{\footnotesize \textbf{Vincent Laviron} \\ It's possible!}
+  \end{subfigure}
+\end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{\texttt{Eio.Rcfd}}
+\begin{minted}{ocaml}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable ops: int [@atomic]; mutable state: state [@atomic] }
+
+let make fd = { ops= 0; state= Open fd }
+
+let closed = Closing (fun () -> ())
+let close t =
+  match t.state with
+  | Closing _ -> false
+  | Open fd as prev ->
+      let close () = Unix.close fd in
+      let next = Closing close in
+      if Atomic.Loc.compare_and_set [%atomic.loc t.state] prev next then
+        ...
+      else
+        false
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Generative constructors}
+\Large
+\begin{minted}{ocaml}
+type 'a list =
+  | Nil
+  | Cons of 'a * 'a list [@generative]
+
+type state =
+  | Open of Unix.file_descr [@generative] [@zoo.reveal]
+  | Closing of (unit -> unit)
+\end{minted}
+\end{frame}

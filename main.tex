@@ -1,0 +1,70 @@
+\documentclass[aspectratio=169, xcolor=dvipsnames]{beamer}
+
+%----------------------------------------
+
+\input{setup}
+
+%----------------------------------------
+
+\title{
+  Zoo: \\
+  A framework for the verification \\
+  of concurrent \OCamlFive programs \\
+  using separation logic
+}
+\date{
+}
+\titlegraphic{
+  \vspace{-2cm}
+  \begin{figure}
+    \begin{subfigure}[b]{0.25\textwidth}
+      \centering
+      \includegraphics[height=2.8cm]{images/clement_allain.jpg}
+      \caption*{\footnotesize \underline{Clément} \\ \underline{Allain}}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.25\textwidth}
+      \centering
+      \includegraphics[height=2.8cm]{images/gabriel_scherer.jpg}
+      \caption*{\footnotesize Gabriel \\ Scherer}
+    \end{subfigure}
+  \end{figure}
+}
+
+%----------------------------------------
+%----------------------------------------
+
+\begin{document}
+
+%----------------------------------------
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+%----------------------------------------
+
+\input{introduction}
+
+\input{zoo}
+
+\input{physical_equality}
+
+\input{conclusion}
+
+%----------------------------------------
+
+\begin{frame}[plain, noframenumbering]
+\centering
+\huge
+Thank you for your attention!
+\end{frame}
+
+%----------------------------------------
+
+% \appendix
+
+% \input{appendix}
+
+%----------------------------------------
+
+\end{document}

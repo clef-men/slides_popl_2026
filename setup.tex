@@ -1,0 +1,115 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+%----------------------------------------
+
+\usepackage[dvipsnames]{xcolor}
+
+%----------------------------------------
+
+\usepackage{appendixnumberbeamer}
+
+\setbeamertemplate{navigation symbols}{}
+
+\def\footer{}
+\addtobeamertemplate{footline}{%
+	\hspace*{\fill}%
+	\footer%
+	\hspace*{\fill}%
+	\llap{%
+		\insertframenumber\,/\,\inserttotalframenumber%
+		\hspace{5pt}%
+	}%
+	\vskip5pt%
+}
+
+\setbeamerfont{section in toc}{size=\Large}
+\AtBeginSection[]{
+  {
+    \setbeamertemplate{footline}{}
+    \begin{frame}[noframenumbering]
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+}
+
+%----------------------------------------
+
+\usepackage[square]{natbib}
+
+\bibliographystyle{ACM-Reference-Format}
+
+\citestyle{authoryear}
+
+%----------------------------------------
+
+\AddToHook{cmd/ttfamily/after}{\frenchspacing}
+
+%----------------------------------------
+
+\usepackage{relsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\smaller}
+
+%----------------------------------------
+
+% adjustwidth
+\usepackage{changepage}
+
+%----------------------------------------
+
+\usepackage{graphicx}
+
+%----------------------------------------
+
+% more includegraphics options
+% (valign, frame, cframe...)
+\usepackage[export]{adjustbox}
+
+%----------------------------------------
+
+\usepackage{float}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+%----------------------------------------
+
+\usepackage{amssymb}
+
+\usepackage{mathtools}
+
+%----------------------------------------
+
+\usepackage{pifont}
+
+%----------------------------------------
+
+\usepackage{tikz}
+
+\usepackage{tzplot}
+
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{automata}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{graphs}
+\usetikzlibrary{positioning}
+\usetikzlibrary{quotes}
+
+%----------------------------------------
+
+\usepackage{dirtree}
+
+%----------------------------------------
+
+\usepackage{myminted}
+
+\usepackage{mymathpartir}
+
+\usepackage{macros}
+
+\usepackage{iris}
+
+\usepackage{zoo}
+
+\usepackage{overtools}

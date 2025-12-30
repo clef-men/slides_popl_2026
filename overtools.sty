@@ -1,0 +1,122 @@
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\ProvidesPackage{overtools}
+
+%% imports, global setup
+\RequirePackage{tikz}
+\RequirePackage{xparse}
+\RequirePackage{pgfkeys}
+\RequirePackage{calc}
+
+\tikzstyle{every picture}+=[remember picture]
+
+\pgfkeys{
+ /overtools/.is family, /overtools,
+ default/.style = 
+  {fade = 0.7, width = 0.8, margin = 0.2cm, pos={0,0}, color = \normaltextcolor, name = {}},
+ fade/.estore in = \overtoolsFade,
+ width/.estore in = \overtoolsWidth,
+ margin/.estore in = \overtoolsMargin,
+ pos/.estore in = \overtoolsPos,
+ color/.estore in = \overtoolsColor,
+ name/.estore in = \overtoolsName
+}
+
+%% small tiny helpers
+\newcommand\alertcolor{alerted text.fg}
+\newcommand\normaltextcolor{normal text.fg}
+
+%% overboxes (internal helper commands)
+\newcommand\tikzcenter{\pgftransformshift{\pgfpointanchor{current page}{center}} }
+
+% \fadeslide<overlayspec>{opacity}
+% Fades away the slide to white. Nice as background for an overbox.
+\NewDocumentCommand\fadeslide{D<>{1-} O{0.7}}{%
+  \only<#1>{\begin{tikzpicture}[overlay] 
+      \tikzcenter
+      % fade out background
+      \node[
+      fill=bg,
+      fill opacity=#2,
+      minimum width=\paperwidth,minimum height=\paperheight,
+      align=center, 
+      anchor=center 
+      ] at (0,0) {};
+    \end{tikzpicture}}%
+}
+
+% \begin{posbox}<overlaypec>[width=?,pos=?,margin=?]
+%   Text
+% \end{posbox}
+% Draws the text on top of the slide. [width] is in fractions of the slide width.
+% [pos] defines the center of the box in tikz units with (0,0) being the center of the slide.
+\newsavebox{\overboxbox}
+\DeclareDocumentEnvironment{posbox}{D<>{1-} O{}}
+{\pgfkeys{/overtools, default, #2}%
+ \begin{lrbox}{\overboxbox}\begin{minipage}{\overtoolsWidth\textwidth}}%
+{\end{minipage}\end{lrbox}%
+ \pgfkeys{/overtools, default, #2}%
+ \visible<#1>{\begin{tikzpicture}[overlay]%
+     \tikzcenter
+     \node at (\overtoolsPos) {\usebox{\overboxbox}};
+   \end{tikzpicture}}%
+}
+
+%% Shadow
+\newlength{\shadowsize}\setlength{\shadowsize}{6pt}
+\newlength{\boxroundness}\setlength{\boxroundness}{3pt}
+
+% \begin{shadowblock}
+%   Text
+% \end{shadowblock}
+% Draws the text with with background, a round corner and a transparent dropshadow.
+\newlength{\boxw}
+\newlength{\boxh}
+\newlength{\tmpa}
+\newsavebox{\shadowblockbox}
+\DeclareDocumentEnvironment{shadowblock}{O{}}%
+{\begin{lrbox}{\shadowblockbox}\begin{minipage}{\textwidth}}%
+{\end{minipage}\end{lrbox}%
+\settowidth{\boxw}{\usebox{\shadowblockbox}}%
+\settodepth{\tmpa}{\usebox{\shadowblockbox}}%
+\settoheight{\boxh}{\usebox{\shadowblockbox}}%
+\addtolength{\boxh}{\tmpa}%
+\pgfkeys{/overtools, default, #1}%
+\begin{tikzpicture}%
+    \addtolength{\boxw}{\boxroundness * 2}
+    \addtolength{\boxw}{\overtoolsMargin * 2}
+    \addtolength{\boxh}{\boxroundness * 2}
+    \addtolength{\boxh}{\overtoolsMargin * 2}
+
+    \foreach \x in {0,.05,...,1}
+    {
+        \setlength{\tmpa}{\shadowsize * \real{\x}}
+        \fill[xshift=\shadowsize - 1pt,yshift=-\shadowsize + 1pt,
+                \overtoolsColor,opacity=.04,rounded corners=\boxroundness]
+            (\tmpa, \tmpa) rectangle +(\boxw - \tmpa - \tmpa,
+                \boxh - \tmpa - \tmpa);
+    }
+
+    \node[rectangle,fill=white, draw=\overtoolsColor, rounded corners=\boxroundness,minimum width=\boxw,minimum height=\boxh,anchor=south west] (\overtoolsName)
+        at (0, 0) {};
+    \node[xshift=(\boxroundness + \overtoolsMargin),yshift=(\boxroundness + \overtoolsMargin),
+        inner sep=0pt,outer sep=0pt,anchor=south west]
+            at (0,0) {\usebox{\shadowblockbox}};
+\end{tikzpicture}}
+
+
+%% The main "overbox" command
+
+% \begin{overbox}<overlaypec>[fade=?,width=?,margin=?,pos=?]
+%   Text
+% \end{overbox}
+% Draws the text on top of the slide in a shadowed box with faded background.
+\DeclareDocumentEnvironment{overbox}{D<>{1-} O{}}%
+{\pgfkeys{/overtools, default, #2}%
+ \fadeslide<#1>[\overtoolsFade]%
+ \begin{posbox}<#1>[#2]%
+ \begin{shadowblock}[#2]}%
+{\end{shadowblock}%
+ \end{posbox}}
+
+
+\endinput

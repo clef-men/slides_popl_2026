@@ -1,0 +1,88 @@
+\section{Introduction}
+
+% introduction du parallélisme
+% écosystème naissant (Domainslib, Saturn, Eio)
+% besoin de vérification
+\begin{frame}{
+  \includegraphics[scale=.15, valign=t]{images/ocaml.png}
+  \hfilll
+  \includegraphics[height=2cm, valign=t]{images/gabriel_scherer.jpg}
+  \begin{tabular}[t]{l}
+      \textcolor{Red}{``\emph{Nobody cares about \OCaml.}''}
+    \\\\
+      \multicolumn{1}{r}{\textcolor{RoyalBlue}{``\emph{\OCaml is brain-dead.}''}}
+  \end{tabular}
+  \includegraphics[height=2cm, valign=t]{images/unknown.png}
+}
+\large
+\vfill
+\begin{itemize}
+  \item \textbf{Functional}: first-class functions, algebraic data types.
+  \item \textbf{Imperative}: references, mutable records.
+  \item \textbf{Strongly typed}: well-typedness $\implies$ safety.
+  \item \textbf{Garbage-collected}: automatic memory management.
+\end{itemize}
+\vfill
+From \textcolor{color2}{\OCamlFive (2022)}:
+\begin{itemize}
+  \item \textbf{Parallel}: domains, atomic references, blocking mechanisms.
+  \item \textbf{Concurrent}: algebraic effects.
+\end{itemize}
+\end{frame}
+
+% insist on concurrency
+\begin{frame}{\OCaml verification ecosystem}
+\begin{adjustwidth}{-1em}{-1em}
+\large
+\begin{tabular}{lccccc}
+    \textbf{Language} &
+    \textbf{Concurrency} &
+    \textbf{\Iris} &
+    \textbf{$\approx$ \OCaml} &
+    \textbf{Translation} &
+    \textbf{Automation}
+  \\\\
+    \Cameleer &
+    \smileyFrown &
+    \smileyFrown &
+    \smileySmile &
+    \smileySmile &
+    \smileySmile
+  \\
+    \c{coq\_of\_ocaml} &
+    \smileyFrown &
+    \smileyFrown &
+    \smileySmile &
+    \smileySmile &
+    \smileyFrown
+  \\
+    \CFML &
+    \smileyFrown &
+    \smileyFrown &
+    \smileySmile &
+    \smileySmile &
+    \smileyFrown
+  \\
+    \Osiris &
+    \smileyFrown &
+    \smileySmile &
+    \smileySmile &
+    \smileySmile &
+    \smileyFrown
+  \\
+    \HeapLang &
+    \smileySmile &
+    \smileySmile &
+    \smileyFrown &
+    \smileyFrown &
+    \smileyMeh
+  \\\\
+    \Zoo &
+    \smileySmile &
+    \smileySmile &
+    \smileySmile &
+    \smileySmile &
+    \smileyMeh
+\end{tabular}
+\end{adjustwidth}
+\end{frame}
