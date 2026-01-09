@@ -209,43 +209,43 @@ Proof. ... Qed.
   }
   
   \visible<3->{
-    \tznode* [color3, very thick] (\rocqWidth*1/3,\rocqHeight*2/3) {Std}
+    \tznode* [color3, very thick] (\rocqWidth*1/4,\rocqHeight*2/3) {Std} [right]
   }
   
   \visible<5->{
-    \tznode* [color3, very thick] (\rocqWidth*2/3,\rocqHeight*2/3) {Persistent}
+    \tznode* [color3, very thick] (\rocqWidth*3/4,\rocqHeight*2/3) {Persistent} [left]
   }
   
   \visible<7->{
-    \tznode* [color3, very thick] (\rocqWidth*1/3,\rocqHeight*1/3) {Rcfd}
+    \tznode* [color3, very thick] (\rocqWidth*1/4,\rocqHeight*1/3) {Rcfd} [right]
   }
   
   \visible<9->{
-    \tznode* [color3, very thick] (\rocqWidth*2/3,\rocqHeight*1/3) {Saturn}
+    \tznode* [color3, very thick] (\rocqWidth*3/4,\rocqHeight*1/3) {Saturn} [left]
   }
 \end{tikzpicture}
 
-\begin{overbox}<4>[width=.6]
+\begin{overbox}<4>[width=.56]
   \textbf{Standard data structures} \\
-  \strut\\
-  \begin{minipage}{.4\textwidth}
+  \begin{minipage}[t]{.5\textwidth}
     \begin{itemize}
       \item \c{Array}
       \item \c{Dynarray}
-      \item \c{Inf\_array}
       \item \c{List}
       \item \c{Stack}
       \item \c{Queue}
+      \item \textcolor{color2}{\c{Inf\_array}}
+      \item \textcolor{color2}{\c{Deque}}
     \end{itemize}
   \end{minipage}
-  \begin{minipage}{.4\textwidth}
+  \begin{minipage}[t]{.4\textwidth}
     \begin{itemize}
       \item \c{Domain}
       \item \c{Mutex}
       \item \c{Semaphore}
       \item \c{Condition}
-      \item \c{Ivar}
-      \item \c{Mvar}
+      \item \textcolor{color2}{\c{Ivar}}
+      \item \textcolor{color2}{\c{Mvar}}
     \end{itemize}
   \end{minipage}
 \end{overbox}

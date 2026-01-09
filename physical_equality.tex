@@ -5,8 +5,8 @@
 \begin{itemize}
   \item boolean
   \item integer
-  \item mutable block (pointer)
-  \item immutable block (tag and fields)
+  \item \textcolor{color2}{mutable block (pointer)}
+  \item \textcolor{color2}{immutable block (tag and fields)}
   \item function
 \end{itemize}
 \end{frame}
@@ -16,8 +16,8 @@
 \begin{minted}{ocaml}
 let x1 = Some ()
 let x2 = Some ()
-let test1 = x1 == x1 (* maybe true *)
-let test2 = x1 == x2 (* maybe false *)
+let test1 = x1 == x1  (* maybe true *)
+let test2 = x1 == x2  (* maybe false *)
 \end{minted}
 \vfill
 \begin{tabular}{ll}
@@ -33,17 +33,17 @@ let test2 = x1 == x2 (* maybe false *)
 \begin{frame}[fragile]{Sharing}
 \Large
 \begin{minted}{ocaml}
-let test1 = Some 0 == Some 0 (* maybe true *)
-let test2 = [0;1]  == [0;1]  (* maybe true *)
+let test1 = Some 0 == Some 0  (* maybe true *)
+let test2 = [0;1]  == [0;1]   (* maybe true *)
 \end{minted}
 \end{frame}
 
 \begin{frame}[fragile]{Value representation conflicts}
 \Large
 \begin{minted}{ocaml}
-let test1 = Obj.repr false == Obj.repr 0 (* true *)
-let test2 = Obj.repr None  == Obj.repr 0 (* true *)
-let test3 = Obj.repr []    == Obj.repr 0 (* true *)
+let test1 = Obj.repr false == Obj.repr 0  (* true *)
+let test2 = Obj.repr None  == Obj.repr 0  (* true *)
+let test3 = Obj.repr []    == Obj.repr 0  (* true *)
 \end{minted}
 \end{frame}
 
@@ -53,9 +53,9 @@ let test3 = Obj.repr []    == Obj.repr 0 (* true *)
 type any =
   Any : 'a -> any
 
-let test1 = Any false == Any 0 (* maybe true *)
-let test2 = Any None  == Any 0 (* maybe true *)
-let test3 = Any []    == Any 0 (* maybe true *)
+let test1 = Any false == Any 0  (* maybe true *)
+let test2 = Any None  == Any 0  (* maybe true *)
+let test3 = Any []    == Any 0  (* maybe true *)
 \end{minted}
 \end{frame}
 
@@ -102,7 +102,7 @@ Qed.
 \Large
 \begin{minted}{ocaml}
 let x = Some 0
-let test = x == x (* maybe false *)
+let test = x == x  (* maybe false *)
 \end{minted}
 \vfill
 \begin{figure}
