@@ -5,29 +5,29 @@
 % besoin de vérification
 \begin{frame}{
   \includegraphics[scale=.15, valign=t]{images/ocaml.png}
-  \hfilll
-  \includegraphics[height=2cm, valign=t]{images/gabriel_scherer.jpg}
+  \hfill
   \begin{tabular}[t]{l}
       \textcolor{Red}{``\emph{Nobody cares about \OCaml at POPL.}''}
-    \\\\
-      \multicolumn{1}{r}{\textcolor{RoyalBlue}{``\emph{\OCaml is brain-dead.}''}}
   \end{tabular}
-  \includegraphics[height=2cm, valign=t]{images/unknown.png}
+  \includegraphics[height=2cm, valign=t]{images/gabriel_scherer.jpg}
 }
 \large
 \vfill
-\begin{itemize}
-  \item \textbf{Functional}: first-class functions, algebraic data types.
-  \item \textbf{Imperative}: references, mutable records.
-  \item \textbf{Strongly typed}: well-typedness $\implies$ safety.
-  \item \textbf{Garbage-collected}: automatic memory management.
-\end{itemize}
+
+OCaml 5.0 (December 2022) introduced a multicore runtime.
+
 \vfill
-From \textcolor{color2}{\OCamlFive (2022)}:
-\begin{itemize}
-  \item \textbf{Parallel}: domains, atomic references, blocking mechanisms.
-  \item \textbf{Concurrent}: algebraic effects.
-\end{itemize}
+
+$\Longrightarrow$ nascent ecosystem of concurrency building blocks.
+
+\hfill (Domainslib, Saturn, Eio...) \hfill {}
+
+\vfill
+
+Concurrent data-structures are fairly complex:
+\hfill software verification!
+
+\vfill
 \end{frame}
 
 % insist on concurrency
