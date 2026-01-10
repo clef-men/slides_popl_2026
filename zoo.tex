@@ -71,35 +71,35 @@
 \end{center}
 \end{frame}
 
-\begin{frame}[fragile]{\Zoo in practice}
-\colorlet{domainslib}{blue}
-\colorlet{scheduler}{cyan}
-\centering
-\begin{tabular}{ccc}
-    \begin{minipage}{0.4\textwidth}\dirtree{%
-      .1 project.
-        .2 dune-project.
-        .2 lib.
-          .3 \textcolor{domainslib}{domainslib}.
-            .4 dune.
-            .4 \textcolor{scheduler}{scheduler.ml}.
-            .4 scheduler.mli.
-    }\end{minipage}
-  &
-    $\LARGE\step{\hskip2em}$
-  &
-    \begin{minipage}{0.4\textwidth}\dirtree{%
-      .1 theories.
-        .2 \textcolor{domainslib}{domainslib}.
-          .3 \textcolor{scheduler}{scheduler\_\_code.v}.
-          .3 \textcolor{scheduler}{scheduler\_\_types.v}.
-    }\end{minipage}
-\end{tabular}
-\vfill
-\begin{center}
-  \Large\c{\$ ocaml2zoo project theories}
-\end{center}
-\end{frame}
+%\begin{frame}[fragile]{\Zoo in practice}
+%\colorlet{domainslib}{blue}
+%\colorlet{scheduler}{cyan}
+%\centering
+%\begin{tabular}{ccc}
+%    \begin{minipage}{0.4\textwidth}\dirtree{%
+%      .1 project.
+%        .2 dune-project.
+%        .2 lib.
+%          .3 \textcolor{domainslib}{domainslib}.
+%            .4 dune.
+%            .4 \textcolor{scheduler}{scheduler.ml}.
+%            .4 scheduler.mli.
+%    }\end{minipage}
+%  &
+%    $\LARGE\step{\hskip2em}$
+%  &
+%    \begin{minipage}{0.4\textwidth}\dirtree{%
+%      .1 theories.
+%        .2 \textcolor{domainslib}{domainslib}.
+%          .3 \textcolor{scheduler}{scheduler\_\_code.v}.
+%          .3 \textcolor{scheduler}{scheduler\_\_types.v}.
+%    }\end{minipage}
+%\end{tabular}
+%\vfill
+%\begin{center}
+%  \Large\c{\$ ocaml2zoo project theories}
+%\end{center}
+%\end{frame}
 
 \begin{frame}[fragile]{\Zoo in practice}
 \centering
@@ -163,6 +163,7 @@ Proof. ... Qed.
 \end{minipage}
 \end{frame}
 
+% following a pragmatic approach, we support what's needed in practice, in the concurrent programs we studied
 \begin{frame}{\Zoo features}
 \Large
 \begin{minipage}[t]{.5\textwidth}

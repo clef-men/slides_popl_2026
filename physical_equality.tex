@@ -1,67 +1,32 @@
+\newcommand{\angles}[2][]{%
+  \langle\ %
+  \ifx #1\empty \else%
+    \v{#1} \ldotp \,%
+  \fi%
+  #2%
+  \ \rangle%
+}
+
 \section{Physical equality}
 
-\begin{frame}{Classification of \Zoo values}
-\LARGE
-\begin{itemize}
-  \item boolean
-  \item integer
-  \item \textcolor{color2}{mutable block (pointer)}
-  \item \textcolor{color2}{immutable block (tag and fields)}
-  \item function
-\end{itemize}
-\end{frame}
+%\begin{frame}{Classification of \Zoo values}
+%\LARGE
+%\begin{itemize}
+%  \item boolean
+%  \item integer
+%  \item \textcolor{color2}{mutable block (pointer)}
+%  \item \textcolor{color2}{immutable block (tag and fields)}
+%  \item function
+%\end{itemize}
+%\end{frame}
 
-\begin{frame}[fragile]{Non-deterministic semantics}
-\Large
-\begin{minted}{ocaml}
-let x1 = Some ()
-let x2 = Some ()
-let test1 = x1 == x1  (* maybe true *)
-let test2 = x1 == x2  (* maybe false *)
-\end{minted}
-\vfill
-\begin{tabular}{ll}
-    What \emph{guarantees} when physical equality
-    &
-    (1) returns \mintinline{ocaml}{true},
-  \\
-    &
-    (2) returns \mintinline{ocaml}{false}?
-\end{tabular}
-\end{frame}
-
-\begin{frame}[fragile]{Sharing}
-\Large
-\begin{minted}{ocaml}
-let test1 = Some 0 == Some 0  (* maybe true *)
-let test2 = [0;1]  == [0;1]   (* maybe true *)
-\end{minted}
-\end{frame}
-
-\begin{frame}[fragile]{Value representation conflicts}
-\Large
-\begin{minted}{ocaml}
-let test1 = Obj.repr false == Obj.repr 0  (* true *)
-let test2 = Obj.repr None  == Obj.repr 0  (* true *)
-let test3 = Obj.repr []    == Obj.repr 0  (* true *)
-\end{minted}
-\end{frame}
-
-\begin{frame}[fragile]{Sharing + conflicts}
-\Large
-\begin{minted}{ocaml}
-type any =
-  Any : 'a -> any
-
-let test1 = Any false == Any 0  (* maybe true *)
-let test2 = Any None  == Any 0  (* maybe true *)
-let test3 = Any []    == Any 0  (* maybe true *)
-\end{minted}
-\end{frame}
-
-\begin{frame}[fragile]{Treiber stack}
+\begin{frame}[fragile]{Physical equality in \emph{fine-grained} concurrent programs}
 \large
-\begin{minted}{ocaml}
+\strut
+\vfill
+\begin{overprint}
+\onslide<1>
+\begin{ocamlcode}
 type 'a t =
   'a list Atomic.t
 
@@ -70,80 +35,348 @@ let create () =
 
 let rec push t v =
   let old = Atomic.get t in
-  let new_ = v :: old in
-  if not @@ Atomic.compare_and_set t old new_ then (
-    Domain.cpu_relax () ;
+  let new = v :: old in
+  if Atomic.compare_and_set t old new then
+    ()
+  else
     push t v
-  )
+\end{ocamlcode}
+\onslide<2->
+\begin{minted}[escapeinside=??]{text}
+type 'a t =
+  'a list Atomic.t
+
+let create () =
+  Atomic.make []
+
+let rec push t v =
+  let old = Atomic.get t in
+  let new = v :: old in
+  if ?\textcolor{color2}{Atomic.compare\_and\_set}\tikzmark{mark}? t old new then
+    ()
+  else
+    push t v
 \end{minted}
+\end{overprint}
+\only<2->{
+  \def\x{\textwidth*0.55}
+  \def\y{\textheight*1/2}
+  \def\dx{\textwidth*1/50}
+  \def\dy{\textheight*1/15}
+  \begin{tikzpicture}[remember picture]
+    \draw [overlay, ->, line width=1pt, color2, opacity=.5] (\x,\y) node [above right, opacity=1] {\textbf{Physical comparison \texttt{(==)}}} -- ([yshift=.8em] pic cs:mark) ;
+    \only<3->{
+      \draw [overlay, color2] (\x+\dx,\y-\dy) node [above right] {\OCaml: under-specified} ;
+    }
+    \only<4->{
+      \draw [overlay, color2] (\x+\dx,\y-2*\dy) node [above right] {\HeapLang: too restrictive} ;
+      \draw [overlay, color2] (\x+\dx,\y-3*\dy) node [above right] {\phantom{\HeapLang: }incompatible w/ \OCaml} ;
+    }
+  \end{tikzpicture}
+}
 \end{frame}
 
-\begin{frame}[fragile]{Treiber stack specification}
+\begin{frame}[fragile]{When physical equality returns \c{true}}
 \large
-\begin{minted}{coq}
-Lemma stack_push_spec t ι v :
-  <<< 
-    stack_inv t ι
-  | ∀∀ vs,
-    stack_model t vs 
-  >>>
-    stack_push t v @ ↑ι
-  <<<
-    stack_model t (v :: vs)
-  | RET (); True
-  >>>.
-Proof.
-  ...
-Qed.
+\begin{overprint}
+\onslide<1>
+\begin{minted}[escapeinside=??]{text}
+let rec push t v =
+  let old = Atomic.get t in
+  let new = v :: old in
+  
+  if ?\textcolor{color2}{Atomic.compare\_and\_set}? t old new then
+    
+    
+    ()
+  else
+    push t v
 \end{minted}
-\end{frame}
-
-\begin{frame}[fragile]{Unsharing}
+\onslide<2>
+\begin{minted}[escapeinside=??]{text}
+let rec push t v =
+  let old = Atomic.get t in
+  let new = v :: old in
+  ?\textcolor{color1}{$\angles[vs]{\l{stack-model}\ t\ \v{vs} \iSep \ldots }$}?
+  if ?\textcolor{color2}{Atomic.compare\_and\_set}? t old new then
+    
+    
+    ()
+  else
+    push t v
+\end{minted}
+\onslide<3>
+\begin{minted}[escapeinside=??]{text}
+let rec push t v =
+  let old = Atomic.get t in
+  let new = v :: old in
+  ?\textcolor{color1}{$\angles[vs]{\l{stack-model}\ t\ \v{vs} \iSep \ldots }$}?
+  if ?\textcolor{color2}{Atomic.compare\_and\_set}? t old new then
+    ?\textcolor{color1}{$\angles{\l{stack-model}\ t\ (\cons{v}{\v{old}}) \iSep \v{vs} \similar[phys] \v{old}}$}?
+    
+    ()
+  else
+    push t v
+\end{minted}
+\onslide<4-6>
+\begin{minted}[escapeinside=??]{text}
+let rec push t v =
+  let old = Atomic.get t in
+  let new = v :: old in
+  ?\textcolor{color1}{$\angles[vs]{\l{stack-model}\ t\ \v{vs} \iSep \ldots }$}?
+  if ?\textcolor{color2}{Atomic.compare\_and\_set}? t old new then
+    ?\textcolor{color1}{$\angles{\l{stack-model}\ t\ (\cons{v}{\v{old}}) \iSep \v{vs} \similar[phys] \v{old}}$}?
+    ?\textcolor{color1}{$\angles{\l{stack-model}\ t\ (\cons{v}{\v{vs}})}$}?
+    ()
+  else
+    push t v
+\end{minted}
+\onslide<7>
+\begin{minted}[escapeinside=??]{text}
+let rec push t v =
+  let old = Atomic.get t in
+  let new = v :: old in
+  ?\textcolor{color1}{$\angles[vs]{\l{stack-model}\ t\ \v{vs} \iSep \ldots }$}?
+  if ?\textcolor{color2}{Atomic.compare\_and\_set}? t old new then
+    ?\textcolor{color1}{$\angles{\l{stack-model}\ t\ (\cons{v}{\v{old}}) \iSep \v{vs} \similar[phys] \v{old}}$}?
+    ?\textcolor{color1}{\st{$\angles{\l{stack-model}\ t\ (\cons{v}{\v{vs}})}$}}?
+    ()
+  else
+    push t v
+\end{minted}
+\end{overprint}
+\begin{overbox}<5>[width=.9]
 \Large
-\begin{minted}{ocaml}
-let x = Some 0
-let test = x == x  (* maybe false *)
-\end{minted}
-\vfill
-\begin{figure}
-  \captionsetup{justification=centering}
-  \begin{subfigure}[b]{0.3\textwidth}
-    \centering
-    \includegraphics[height=3cm]{images/clement_allain.jpg}
-    \caption*{\footnotesize \textbf{Clément Allain} \\ Impossible! Unique identity.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.3\textwidth}
-    \centering
-    \includegraphics[height=3cm]{images/armael_gueneau.jpg}
-    \caption*{\footnotesize \textbf{Armaël Guéneau} \\ This would be \emph{unsharing}.}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.3\textwidth}
-    \centering
-    \includegraphics[height=3cm]{images/vincent_laviron.jpg}
-    \caption*{\footnotesize \textbf{Vincent Laviron} \\ It's possible!}
-  \end{subfigure}
-\end{figure}
+\centering
+\textbf{Sharing of immutable blocks}
+\bigskip
+\begin{ocamlcode}
+let test1 = 1 :: [] == 1 :: []  (* maybe true *)
+let test2 = 1 :: [] == 1 :: []  (* maybe false *)
+\end{ocamlcode}
+\bigskip
+\[
+  \begin{array}{lcl}
+      v_1 \mystackrel{rocq}{=} v_2 &
+      \centernot\implies &
+      v_1 \similar[phys] v_2
+  \end{array}
+\]
+\end{overbox}
+\begin{overbox}<6>[width=.9]
+\Large
+\centering
+\textbf{Value representation conflicts}
+\bigskip
+\begin{ocamlcode}
+type any = Any : 'a -> any
+let test1 = Any false == Any 0  (* maybe true *)
+let test2 = Any None  == Any 0  (* maybe true *)
+let test3 = Any []    == Any 0  (* maybe true *)
+\end{ocamlcode}
+\bigskip
+\[
+  \begin{array}{lcl}
+%      \neg\ (v_1 \mystackrel{rocq}{=} v_2) &
+%      \centernot\implies &
+%      \neg\ (v_1 \similar[phys] v_2)
+%    \\
+      v_1 \similar[phys] v_2 &
+      \centernot\implies &
+      v_1 \mystackrel{rocq}{=} v_2
+  \end{array}
+\]
+\end{overbox}
 \end{frame}
 
-\begin{frame}[fragile]{\texttt{Eio.Rcfd}}
-\begin{minted}{ocaml}
+%\begin{frame}[fragile]{When physical equality returns \c{false}}
+%\large
+%\begin{minted}[escapeinside=??]{text}
+%let rec push t v =
+%  let old = Atomic.get t in
+%  let new = v :: old in
+%  ?\textcolor{color1}{$\angles[vs]{\l{stack-model}\ t\ \v{vs} \iSep \ldots }$}?
+%  if ?\textcolor{color2}{Atomic.compare\_and\_set}? t old new then
+%    ()
+%  else
+%    ?\textcolor{color1}{$\angles{\l{stack-model}\ t\ \v{vs} \iSep \v{vs} \nonsimilar[phys] \v{old}}$}?
+%    ?\textcolor{color1}{$\angles{\l{stack-model}\ t\ \v{vs}}$}?
+%    push t v
+%\end{minted}
+%\end{frame}
+
+\begin{frame}[fragile]{When physical equality returns \c{false}}
+\begin{overprint}
+\onslide<1>
+\begin{ocamlcode}
 type state = Open of Unix.file_descr | Closing of (unit -> unit)
-type t = { mutable ops: int [@atomic]; mutable state: state [@atomic] }
+type t = { mutable state: state [@atomic]; ... }
 
-let make fd = { ops= 0; state= Open fd }
-
-let closed = Closing (fun () -> ())
-let close t =
-  match t.state with
+let make fd = { state= Open fd; ... }
+let close t = match t.state with
   | Closing _ -> false
-  | Open fd as prev ->
+  | Open fd as old ->
       let close () = Unix.close fd in
-      let next = Closing close in
-      if Atomic.Loc.compare_and_set [%atomic.loc t.state] prev next then
-        ...
-      else
+      let new = Closing close in
+      
+      if Atomic.Loc.compare_and_set [%atomic.loc t.state] old new
+      then ... else
+        
+        
+        false
+\end{ocamlcode}
+\onslide<2>
+\begin{minted}[escapeinside=??]{text}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable state: state ?\textcolor{color3}{[@atomic]}?; ... }
+
+let make fd = { state= Open fd; ... }
+
+let close t = match t.state with
+  | Closing _ -> false
+  | Open fd as old ->
+      let close () = Unix.close fd in
+      let new = Closing close in
+      
+      if ?\textcolor{color2}{Atomic.Loc.compare\_and\_set}? ?\textcolor{color3}{[%atomic.loc}? t.state?\textcolor{color3}{]}? old new
+      then ... else
+        
+        
         false
 \end{minted}
+\onslide<3>
+\begin{minted}[escapeinside=??]{text}
+type state = ?\textcolor{color2}{Open}? of Unix.file_descr | ?\textcolor{color3}{Closing}? of (unit -> unit)
+type t = { mutable state: state [@atomic]; ... }
+
+let make fd = { state= ?\textcolor{color2}{Open}? fd; ... }
+
+let close t = match t.state with
+  | ?\textcolor{color3}{Closing}? _ -> false
+  | ?\textcolor{color2}{Open}? fd as old ->
+      let close () = Unix.close fd in
+      let new = ?\textcolor{color3}{Closing}? close in
+      
+      if Atomic.Loc.compare_and_set [%atomic.loc t.state] old new
+      then ... else
+        
+        
+        false
+\end{minted}
+\onslide<4>
+\begin{minted}[escapeinside=??]{text}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable state: state [@atomic]; ... }
+
+let make fd = { state= Open fd; ... }
+
+let close t = match t.state with
+  | Closing _ -> false
+  | Open fd as old ->
+      let close () = Unix.close fd in
+      let new = Closing close in
+      
+      if ?\textcolor{color2}{Atomic.Loc.compare\_and\_set}? [%atomic.loc t.state] old new
+      then ... else
+        
+        
+        false
+\end{minted}
+\onslide<5>
+\begin{minted}[escapeinside=??]{text}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable state: state [@atomic]; ... }
+
+let make fd = { state= Open fd; ... }
+
+let close t = match t.state with
+  | Closing _ -> false
+  | Open fd as old ->
+      let close () = Unix.close fd in
+      let new = Closing close in
+      ?\textcolor{color1}{$\angles[\v{state}]{\recordGet{t}{state} \iPointsto \v{state} \iSep \ldots}$}?
+      if ?\textcolor{color2}{Atomic.Loc.compare\_and\_set}? [%atomic.loc t.state] old new
+      then ... else
+        
+        
+        false
+\end{minted}
+\onslide<6>
+\begin{minted}[escapeinside=??]{text}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable state: state [@atomic]; ... }
+
+let make fd = { state= Open fd; ... }
+
+let close t = match t.state with
+  | Closing _ -> false
+  | Open fd as old ->
+      let close () = Unix.close fd in
+      let new = Closing close in
+      ?\textcolor{color1}{$\angles[\v{state}]{\recordGet{t}{state} \iPointsto \v{state} \iSep \ldots}$}?
+      if ?\textcolor{color2}{Atomic.Loc.compare\_and\_set}? [%atomic.loc t.state] old new
+      then ... else
+        ?\textcolor{color1}{$\angles{\recordGet{t}{state} \iPointsto \v{state} \iSep \v{state} \nonsimilar[phys] \v{old} \iSep \ldots}$}?
+        
+        false
+\end{minted}
+\onslide<7-8>
+\begin{minted}[escapeinside=??]{text}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable state: state [@atomic]; ... }
+
+let make fd = { state= Open fd; ... }
+
+let close t = match t.state with
+  | Closing _ -> false
+  | Open fd as old ->
+      let close () = Unix.close fd in
+      let new = Closing close in
+      ?\textcolor{color1}{$\angles[\v{state}]{\recordGet{t}{state} \iPointsto \v{state} \iSep \ldots}$}?
+      if ?\textcolor{color2}{Atomic.Loc.compare\_and\_set}? [%atomic.loc t.state] old new
+      then ... else
+        ?\textcolor{color1}{$\angles{\recordGet{t}{state} \iPointsto \v{state} \iSep \v{state} \nonsimilar[phys] \v{old} \iSep \ldots}$}?
+        ?\textcolor{color1}{$\angles{\recordGet{t}{state} \iPointsto \constr{Closing}\ - \iSep \ldots}$}?
+        false
+\end{minted}
+\onslide<9>
+\begin{minted}[escapeinside=??]{text}
+type state = Open of Unix.file_descr | Closing of (unit -> unit)
+type t = { mutable state: state [@atomic]; ... }
+
+let make fd = { state= Open fd; ... }
+
+let close t = match t.state with
+  | Closing _ -> false
+  | Open fd as old ->
+      let close () = Unix.close fd in
+      let new = Closing close in
+      ?\textcolor{color1}{$\angles[\v{state}]{\recordGet{t}{state} \iPointsto \v{state} \iSep \ldots}$}?
+      if ?\textcolor{color2}{Atomic.Loc.compare\_and\_set}? [%atomic.loc t.state] old new
+      then ... else
+        ?\textcolor{color1}{$\angles{\recordGet{t}{state} \iPointsto \v{state} \iSep \v{state} \nonsimilar[phys] \v{old} \iSep \ldots}$}?
+        ?\textcolor{color1}{\st{$\angles{\recordGet{t}{state} \iPointsto \constr{Closing}\ - \iSep \ldots}$}}?
+        false
+\end{minted}
+\end{overprint}
+\begin{overbox}<8>[width=.9]
+\Large
+\centering
+\textbf{Unsharing of immutable blocks}
+\bigskip
+\begin{ocamlcode}
+let x = Some 0
+let test = x == x  (* maybe false *)
+\end{ocamlcode}
+\bigskip
+\[
+  \begin{array}{lcl}
+      v_1 \nonsimilar[phys] v_2 &
+      \centernot\implies &
+      v_1 \mystackrel{rocq}{\neq} v_2
+  \end{array}
+\]
+\end{overbox}
 \end{frame}
 
 \begin{frame}[fragile]{Generative constructors}

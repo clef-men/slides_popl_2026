@@ -82,7 +82,7 @@
 
 %----------------------------------------
 
-\newcommand{\hl}[2][yellow]{%
+\renewcommand{\hl}[2][yellow]{%
   \TextOrMath{%
     \colorbox{#1}{#2}%
   }{%
@@ -394,7 +394,12 @@
 }
 
 \newcommand{\nonsimilar}[1][]{%
-  \mystackrel{#1}{\not\approx}%
+  \mystackrel{#1}{%
+    \mathrel{%
+      \approx%
+      \hspace{-2ex}{\vcenter{\hbox{\scaleobj{.5}{\big\bracevert}}}}%
+      }%
+  }%
 }
 
 %----------------------------------------
