@@ -136,11 +136,13 @@ Definition stack_push : val :=
 \centering
 \Large
 \begin{minipage}[t]{.5\textwidth}
+\begin{overprint}
+\onslide<1>
 \begin{coqcode}
 Lemma stack_push_spec t ι v :
   <<< 
     stack_inv t ι
-  | ∀∀ vs, stack_model t vs 
+  | ∀∀ vs, stack_model t vs
   >>>
     stack_push t v @ ↑ι
   <<< 
@@ -149,6 +151,49 @@ Lemma stack_push_spec t ι v :
   >>>.
 Proof. ... Qed.
 \end{coqcode}
+\onslide<2>
+\begin{minted}[escapeinside=??]{coq}
+Lemma stack_push_spec t ι v :
+  <<< 
+    ?\hl{stack\_inv t ι}?
+  | ∀∀ vs, stack_model t vs
+  >>>
+    stack_push t v @ ↑ι
+  <<< 
+    stack_model t (v :: vs)
+  | ?\hl{RET (); True}?
+  >>>.
+Proof. ... Qed.
+\end{minted}
+\onslide<3>
+\begin{minted}[escapeinside=??]{coq}
+Lemma stack_push_spec t ι v :
+  <<< 
+    stack_inv t ι
+  | ?\hl{∀∀ vs, stack\_model t vs}?
+  >>>
+    stack_push t v @ ↑ι
+  <<< 
+    ?\hl{stack\_model t (v :: vs)}?
+  | RET (); True
+  >>>.
+Proof. ... Qed.
+\end{minted}
+\onslide<4>
+\begin{minted}[escapeinside=??]{coq}
+Lemma stack_push_spec t ι v :
+  <<< 
+    stack_inv t ι
+  | ∀∀ vs, stack_model t vs
+  >>>
+    stack_push t v @ ↑ι
+  <<< 
+    stack_model t (v :: vs)
+  | RET (); True
+  >>>.
+Proof. ?\hl{...}? Qed.
+\end{minted}
+\end{overprint}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{.4\textwidth}
@@ -173,9 +218,6 @@ Proof. ... Qed.
   \item Mutually recursive functions
   \item Physical equality
   \item Structural equality
-  \item Prophecy variables  
-  \item \Diaframe (basic automation)
-  \item Standard library
 \end{itemize}
 \end{minipage}
 \hfill
@@ -187,6 +229,11 @@ Proof. ... Qed.
   \item \textcolor{color2}{Generative constructors}
 \end{itemize}
 \end{minipage}
+\vfill
+\begin{itemize}
+  \item Prophecy variables  
+  \item \Diaframe (basic automation)
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Verification contributions}

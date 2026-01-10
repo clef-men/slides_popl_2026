@@ -26,7 +26,7 @@
 \vfill
 \begin{overprint}
 \onslide<1>
-\begin{ocamlcode}
+\begin{minted}[escapeinside=??]{ocaml}
 type 'a t =
   'a list Atomic.t
 
@@ -35,12 +35,12 @@ let create () =
 
 let rec push t v =
   let old = Atomic.get t in
-  let new = v :: old in
-  if Atomic.compare_and_set t old new then
+  let ?new? = v :: old in
+  if Atomic.compare_and_set t old ?new? then
     ()
   else
     push t v
-\end{ocamlcode}
+\end{minted}
 \onslide<2->
 \begin{minted}[escapeinside=??]{text}
 type 'a t =
@@ -149,12 +149,14 @@ let rec push t v =
 \Large
 \centering
 \textbf{Sharing of immutable blocks}
-\bigskip
+\medskip
+\medskip
 \begin{ocamlcode}
 let test1 = 1 :: [] == 1 :: []  (* maybe true *)
 let test2 = 1 :: [] == 1 :: []  (* maybe false *)
 \end{ocamlcode}
-\bigskip
+\medskip
+\medskip
 \[
   \begin{array}{lcl}
       v_1 \mystackrel{rocq}{=} v_2 &
@@ -167,14 +169,16 @@ let test2 = 1 :: [] == 1 :: []  (* maybe false *)
 \Large
 \centering
 \textbf{Value representation conflicts}
-\bigskip
+\medskip
+\medskip
 \begin{ocamlcode}
 type any = Any : 'a -> any
 let test1 = Any false == Any 0  (* maybe true *)
 let test2 = Any None  == Any 0  (* maybe true *)
 let test3 = Any []    == Any 0  (* maybe true *)
 \end{ocamlcode}
-\bigskip
+\medskip
+\medskip
 \[
   \begin{array}{lcl}
 %      \neg\ (v_1 \mystackrel{rocq}{=} v_2) &
@@ -208,7 +212,7 @@ let test3 = Any []    == Any 0  (* maybe true *)
 \begin{frame}[fragile]{When physical equality returns \c{false}}
 \begin{overprint}
 \onslide<1>
-\begin{ocamlcode}
+\begin{minted}[escapeinside=??]{ocaml}
 type state = Open of Unix.file_descr | Closing of (unit -> unit)
 type t = { mutable state: state [@atomic]; ... }
 
@@ -217,14 +221,14 @@ let close t = match t.state with
   | Closing _ -> false
   | Open fd as old ->
       let close () = Unix.close fd in
-      let new = Closing close in
+      let ?new? = Closing close in
       
-      if Atomic.Loc.compare_and_set [%atomic.loc t.state] old new
+      if Atomic.Loc.compare_and_set [%atomic.loc t.state] old ?new?
       then ... else
         
         
         false
-\end{ocamlcode}
+\end{minted}
 \onslide<2>
 \begin{minted}[escapeinside=??]{text}
 type state = Open of Unix.file_descr | Closing of (unit -> unit)
@@ -359,16 +363,18 @@ let close t = match t.state with
         false
 \end{minted}
 \end{overprint}
-\begin{overbox}<8>
+\begin{overbox}<8>[width=.67]
 \Large
 \centering
 \textbf{Unsharing of immutable blocks}
-\bigskip
+\medskip
+\medskip
 \begin{ocamlcode}
 let x = Some 0
 let test = x == x  (* maybe false *)
 \end{ocamlcode}
-\bigskip
+\medskip
+\medskip
 \[
   \begin{array}{lcl}
       v_1 \nonsimilar[phys] v_2 &
@@ -376,15 +382,33 @@ let test = x == x  (* maybe false *)
       v_1 \mystackrel{rocq}{\neq} v_2
   \end{array}
 \]
+\begin{figure}
+  \captionsetup{justification=centering}
+  \begin{subfigure}[b]{.35\textwidth}
+    \centering
+    \includegraphics[height=2cm]{images/clement_allain.jpg}
+    \caption*{\tiny \textbf{Clément Allain} \\ Impossible! Unique identity.}
+  \end{subfigure}
+  \begin{subfigure}[b]{.3\textwidth}
+    \centering
+    \includegraphics[height=2cm]{images/armael_gueneau.jpg}
+    \caption*{\tiny \textbf{Armaël Guéneau} \\ This would be \emph{unsharing}.}
+  \end{subfigure}
+  \begin{subfigure}[b]{.3\textwidth}
+    \centering
+    \includegraphics[height=2cm]{images/vincent_laviron.jpg}
+    \caption*{\tiny \textbf{Vincent Laviron} \\ It's possible!}
+  \end{subfigure}
+\end{figure}
 \end{overbox}
 \end{frame}
 
 \begin{frame}[fragile]{Generative constructors}
 \Large
 \begin{minted}{ocaml}
-type 'a list =
+type 'a glist =
   | Nil
-  | Cons of 'a * 'a list [@generative]
+  | Cons of 'a * 'a glist [@generative]
 
 type state =
   | Open of Unix.file_descr [@generative] [@zoo.reveal]
