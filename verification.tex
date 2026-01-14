@@ -1,0 +1,127 @@
+\section{Verification contributions}
+
+\begin{frame}{Verification contributions}
+\centering
+\Large
+
+\vspace{6mm}
+
+\begin{tikzpicture}
+  \def\rocqWidth{10}
+  \def\rocqHeight{6}
+  \def\zooHsep{.8}
+  \def\zooVsep{.8}
+
+  \visible<2->{
+    \tzframe [color1, very thick] (0,0) (\rocqWidth,\rocqHeight)
+    \tznode [color1] (.7,-.5) {Rocq}
+    
+    \tzframe [color2, very thick] (\zooHsep,\zooVsep) (\rocqWidth-\zooHsep,\rocqHeight-\zooVsep)
+    \tznode [color2] (\zooHsep+.7,\zooVsep-.3) {Zoo}
+  }
+  
+  \visible<3->{
+    \tznode* [color3, very thick] (\rocqWidth*1/4,\rocqHeight*2/3) {Std} [right]
+  }
+  
+  \visible<5->{
+    \tznode* [color3, very thick] (\rocqWidth*3/4,\rocqHeight*2/3) {Persistent} [left]
+  }
+  
+  \visible<7->{
+    \tznode* [color3, very thick] (\rocqWidth*1/4,\rocqHeight*1/3) {Rcfd} [right]
+  }
+  
+  \visible<9->{
+    \tznode* [color3, very thick] (\rocqWidth*3/4,\rocqHeight*1/3) {Saturn} [left]
+  }
+\end{tikzpicture}
+
+\begin{overbox}<4>[width=.56]
+  \textbf{Standard data structures} \\
+  \begin{minipage}[t]{.5\textwidth}
+    \begin{itemize}
+      \item \c{Array}
+      \item \c{Dynarray}
+      \item \c{List}
+      \item \c{Stack}
+      \item \c{Queue}
+      \item \textcolor{color2}{\c{Inf\_array}}
+      \item \textcolor{color2}{\c{Deque}}
+    \end{itemize}
+  \end{minipage}
+  \begin{minipage}[t]{.4\textwidth}
+    \begin{itemize}
+      \item \c{Domain}
+      \item \c{Mutex}
+      \item \c{Semaphore}
+      \item \c{Condition}
+      \item \textcolor{color2}{\c{Ivar}}
+      \item \textcolor{color2}{\c{Mvar}}
+    \end{itemize}
+  \end{minipage}
+\end{overbox}
+
+\begin{overbox}<6>[width=.55]
+  \begin{figure}
+    \captionsetup{justification=centering}
+    \begin{subfigure}[b]{.45\textwidth}
+      \centering
+      \includegraphics[height=3cm]{images/basile_clement.jpg}
+      \caption*{\footnotesize \textbf{Basile Clément}}
+    \end{subfigure}
+    \begin{subfigure}[b]{.45\textwidth}
+      \centering
+      \includegraphics[height=3cm]{images/gabriel_scherer.jpg}
+      \caption*{\footnotesize \textbf{Gabriel Scherer}}
+    \end{subfigure}
+  \end{figure}
+  \textbf{Persistent data structures}
+  \begin{itemize}
+    \item Persistent array
+    \item Persistent store
+    \item Persistent union-find
+  \end{itemize}
+\end{overbox}
+
+\begin{overbox}<8>[width=.55]
+  \begin{figure}
+    \captionsetup{justification=centering}
+    \includegraphics[height=3cm]{images/thomas_leonard.jpg}
+    \caption*{\footnotesize \textbf{Thomas Leonard}}
+  \end{figure}
+  \textbf{Parallelism-safe file descriptor}
+  \begin{itemize}
+    \item Generative constructors
+    \item Intricate concurrent protocol
+    \item Two ownership regimes
+  \end{itemize}
+\end{overbox}
+
+\begin{overbox}<10>[width=.55]
+  \large
+  \begin{figure}
+    \captionsetup{justification=centering}
+    \begin{subfigure}[b]{.45\textwidth}
+      \centering
+      \includegraphics[height=3cm]{images/vesa_karvonen.jpg}
+      \caption*{\footnotesize \textbf{Vesa Karvonen}}
+    \end{subfigure}
+    \begin{subfigure}[b]{.45\textwidth}
+      \centering
+      \includegraphics[height=3cm]{images/carine_morel.png}
+      \caption*{\footnotesize \textbf{Carine Morel}}
+    \end{subfigure}
+  \end{figure}
+  \textbf{Standard lock-free data structures}
+  \begin{itemize}
+    \item Stacks
+    \item List-based queues
+    \item Array-based queues
+    \item Stack-based queues
+  \end{itemize}
+\end{overbox}
+
+\visible<11>{
+}
+\end{frame}

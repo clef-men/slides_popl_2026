@@ -1,24 +1,20 @@
 \section{Introduction}
 
-% introduction du parallélisme
-% écosystème naissant (Domainslib, Saturn, Eio)
-% besoin de vérification
-\begin{frame}{
-  \includegraphics[scale=.15, valign=t]{images/ocaml.png}
-  \hfill
-  \textcolor{Red}{``\emph{Nobody cares about \OCaml at POPL.}''}
-  \includegraphics[height=2cm, valign=t]{images/gabriel_scherer.jpg}
-}
-\large
+\begin{frame}{\includegraphics[scale=.15, valign=t]{images/ocaml.png}}
+\Large
+\centering
+\textbf{\OCamlFive (2022)} \\
+\emph{Parallelism}: multi-core runtime, domains, atomic references \\
+\emph{Concurrency}: algebraic effects
 \vfill
-OCaml 5.0 (December 2022) introduced a multicore runtime.
+$\Downarrow$
 \vfill
-$\Longrightarrow$ nascent ecosystem of concurrency building blocks.
-\hfill (Domainslib, Saturn, Eio...) \hfill {}
+\textbf{Nascent ecosystem of parallel \& concurrent software} \\
+\Domainslib, \Saturn, \Eio \ldots
 \vfill
-Concurrent data-structures are fairly complex:
-\hfill software verification!
+$\Downarrow$
 \vfill
+\textbf{Software verification!}
 \end{frame}
 
 % insist on concurrency
